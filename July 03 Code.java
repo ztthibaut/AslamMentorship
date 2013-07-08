@@ -1,4 +1,5 @@
-public long createQuote(BookingRequestDataObject requestDataObject) {
+// Later: Quote is a more appropriate object than QuoteHeader
+public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
    
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
    
@@ -51,5 +52,5 @@ public long createQuote(BookingRequestDataObject requestDataObject) {
         }
     }
     
-    return quoteHeaderId;
+    return quoteHeader;
 }
