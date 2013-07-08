@@ -1,4 +1,4 @@
-public long generateQuote(BookingRequestDataObject requestDataObject) {
+public long createQuote(BookingRequestDataObject requestDataObject) {
    
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
    
