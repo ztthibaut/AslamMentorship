@@ -1,4 +1,5 @@
 // Later: Quote is a more appropriate object than QuoteHeader
+// Could refactor requestDataObject to directly return a date interval
 public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
    
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
@@ -8,12 +9,14 @@ public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
     quoteHeader.setDate(new Date());
     long quoteHeaderId = quoteHeaderDataAccess.save(quoteHeader);
     
-    List<Room> rooms = roomDataAccess.find(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
+    DateInterval dateInterval = new DateInterval(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
+
+    List<Room> rooms = roomDataAccess.find(dateInterval);
     if (rooms == null) {
         return null;
     }
     
-    List<Date> dates = datesStayingHelper(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
+    List<Date> dates = datesStayingHelper(dateInterval);
     
     for (int i = 0; i < requestDataObject.getNumberOfRooms(); i++) {
         Room room = rooms.get(i);
