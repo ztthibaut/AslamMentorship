@@ -1,5 +1,6 @@
 // Later: Quote is a more appropriate object than QuoteHeader
 // Could refactor requestDataObject to directly return a date interval
+// Transactional save to deal with potential unsuccessful save. Assuming the happy path currently
 public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
    
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
@@ -7,7 +8,6 @@ public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
     QuoteHeader quoteHeader = new QuoteHeader();
     quoteHeader.setCustomer(customer);
     quoteHeader.setDate(new Date());
-    long quoteHeaderId = quoteHeaderDataAccess.save(quoteHeader);
     
     DateInterval dateInterval = new DateInterval(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
 
@@ -22,7 +22,6 @@ public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
         Room room = rooms.get(i);
         for (Date date : dates) {
             QuoteDetail detail = new QuoteDetail();
-            detail.setQuoteHeaderId(quoteHeaderId);
             detail.setRoomId(room.getId());
             detail.setDate(date);
             Calendar calendar = Calendar.getInstance();
@@ -41,9 +40,13 @@ public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
                     break;
             }
             quoteDetailDataAccess.save(detail);
+
+            quoteHeader.AddQuoteDetails(detail);
         }
     }
     
+    long quoteHeaderId = quoteHeaderDataAccess.save(quoteHeader);
+
     if (requestDataObject.getSelectedSpecialOfferIds().length > 0) {
         for (Long id : requestDataObject.getSelectedSpecialOfferIds()) {
             SpecialOffer specialOffer = specialOfferDataAccess.get(id);
