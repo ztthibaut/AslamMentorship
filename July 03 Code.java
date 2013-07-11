@@ -20,24 +20,8 @@ public Quote createQuote(BookingRequestDataObject requestDataObject) {
     for (int i = 0; i < requestDataObject.getNumberOfRooms(); i++) {
         Room room = rooms.get(i);
         for (Date date : dates) {
-            QuoteDetail detail = new QuoteDetail();
-            detail.setRoomId(room.getId());
-            detail.setDate(date);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            switch(calendar.get(Calendar.DAY_OF_WEEK)) {
-                case Calendar.MONDAY:
-                case Calendar.TUESDAY:
-                case Calendar.WEDNESDAY:
-                case Calendar.THURSDAY:
-                    detail.setRate(room.getWeekdayRate());
-                    break;
-                case Calendar.FRIDAY:
-                case Calendar.SATURDAY:
-                case Calendar.SUNDAY:
-                    detail.setRate(room.getWeekendRate());;
-                    break;
-            }
+            QuoteDetail detail = createQuoteDetail(room, date);
+ 
             quoteDetailDataAccess.save(detail);
 
             quote.AddQuoteDetails(detail);
@@ -57,4 +41,26 @@ public Quote createQuote(BookingRequestDataObject requestDataObject) {
     }
     
     return quote;
+}
+
+private QuoteDetail createQuoteDetail(Room room, Date date){
+    QuoteDetail detail = new QuoteDetail();
+    detail.setRoomId(room.getId());
+    detail.setDate(date);
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    switch(calendar.get(Calendar.DAY_OF_WEEK)) {
+        case Calendar.MONDAY:
+        case Calendar.TUESDAY:
+        case Calendar.WEDNESDAY:
+        case Calendar.THURSDAY:
+            detail.setRate(room.getWeekdayRate());
+            break;
+        case Calendar.FRIDAY:
+        case Calendar.SATURDAY:
+        case Calendar.SUNDAY:
+            detail.setRate(room.getWeekendRate());;
+            break;
+    }
+    return detail;
 }
