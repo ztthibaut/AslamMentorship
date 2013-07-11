@@ -45,16 +45,15 @@ public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
         }
     }
     
-    long quoteHeaderId = quoteHeaderDataAccess.save(quoteHeader);
 
     if (requestDataObject.getSelectedSpecialOfferIds().length > 0) {
         for (Long id : requestDataObject.getSelectedSpecialOfferIds()) {
             SpecialOffer specialOffer = specialOfferDataAccess.get(id);
             QuoteSpecialOffer quoteSpecialOffer = new QuoteSpecialOffer();
-            quoteSpecialOffer.setQuoteHeaderId(quoteHeaderId);
             quoteSpecialOffer.setSpecialOfferId(id);
             quoteSpecialOffer.setRate(specialOffer.getRate());
             quoteSpecialOfferDataAccess.save(quoteSpecialOffer);
+            quoteHeader.AddSpecialOffers(quoteSpecialOffer);
         }
     }
     
