@@ -4,7 +4,7 @@ public QuoteHeader createQuote(BookingRequestDataObject requestDataObject) {
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
    
     QuoteHeader quoteHeader = new QuoteHeader();
-    quoteHeader.setCustomerId(customer.getId());
+    quoteHeader.setCustomer(customer);
     quoteHeader.setDate(new Date());
     long quoteHeaderId = quoteHeaderDataAccess.save(quoteHeader);
     
