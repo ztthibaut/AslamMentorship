@@ -1,32 +1,14 @@
 // Could refactor requestDataObject to directly return a date interval
 // Transactional save to deal with potential unsuccessful save. Assuming the happy path currently
 public Quote createQuote(BookingRequestDataObject requestDataObject) {
-   
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
    
     Quote quote = new Quote();
     quote.setCustomer(customer);
     quote.setDate(new Date());
     
-    DateInterval dateInterval = new DateInterval(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
-
-    List<Room> rooms = roomDataAccess.find(dateInterval);
-    if (rooms == null) {
-        return null;
-    }
     
-    List<Date> dates = datesStayingHelper(dateInterval);
-    
-    for (int i = 0; i < requestDataObject.getNumberOfRooms(); i++) {
-        Room room = rooms.get(i);
-        for (Date date : dates) {
-            QuoteDetail detail = createQuoteDetail(room, date);
- 
-            quoteDetailDataAccess.save(detail);
-
-            quote.AddQuoteDetails(detail);
-        }
-    }
+    buildQuoteDetails(quote, requestDataObject);
     
 
     if (requestDataObject.getSelectedSpecialOfferIds().length > 0) {
@@ -63,4 +45,26 @@ private QuoteDetail createQuoteDetail(Room room, Date date){
             break;
     }
     return detail;
+}
+
+private void buildQuoteDetails(Quote quote, BookingRequestDataObject requestDataObject){
+    DateInterval dateInterval = new DateInterval(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
+    
+    List<Room> rooms = roomDataAccess.find(dateInterval);
+    if (rooms == null) {
+        return null;
+    }
+    
+    List<Date> dates = datesStayingHelper(dateInterval);
+
+    for (int i = 0; i < requestDataObject.getNumberOfRooms(); i++) {
+        Room room = rooms.get(i);
+        for (Date date : dates) {
+            QuoteDetail detail = createQuoteDetail(room, date);
+ 
+            quoteDetailDataAccess.save(detail);
+
+            quote.AddQuoteDetails(detail);
+        }
+    }
 }
