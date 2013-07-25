@@ -8,6 +8,12 @@ public Quote createQuote(BookingRequestDataObject requestDataObject) {
     quote.setCustomer(customer);
 
     quote.setDate(new Date());
+
+    List<Room> rooms = roomDataAccess.find(dateInterval);
+    if (rooms == null) {
+        return null;
+    }
+
     buildQuoteDetails(quote, requestDataObject);
     buildSpecialOffer(quote, requestDataObject);   
 
@@ -43,6 +49,7 @@ private getRoomRate(Room room, Date date){
             rate = room.getWeekendRate();
             break;
     }
+
     return rate;
 }
 
@@ -50,19 +57,13 @@ private void buildQuoteDetails(Quote quote, BookingRequestDataObject requestData
     DateInterval dateInterval = new DateInterval(requestDataObject.getCheckinDate(), requestDataObject.getCheckoutDate());
     
     List<Room> rooms = roomDataAccess.find(dateInterval);
-    if (rooms == null) {
-        return null;
-    }
-    
     List<Date> dates = datesStayingHelper(dateInterval);
 
     for (int i = 0; i < requestDataObject.getNumberOfRooms(); i++) {
         Room room = rooms.get(i);
         for (Date date : dates) {
             QuoteDetail detail = createQuoteDetail(room, date);
- 
             quoteDetailDataAccess.save(detail);
-
             quote.AddQuoteDetails(detail);
         }
     }
