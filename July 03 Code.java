@@ -1,5 +1,6 @@
 // Could refactor requestDataObject to directly return a date interval
 // Transactional save to deal with potential unsuccessful save. Assuming the happy path currently
+// Assunimg the rate is a double
 public Quote createQuote(BookingRequestDataObject requestDataObject) {
     Quote quote = new Quote();
 
@@ -17,7 +18,16 @@ private QuoteDetail createQuoteDetail(Room room, Date date){
     QuoteDetail detail = new QuoteDetail();
     detail.setRoom(room);
     detail.setDate(date);
+
+    double rate = getRoomRate(room, date);
+    detail.setRate(rate);
     
+    return detail;
+}
+
+private getRoomRate(Room room, Date date){
+    double rate = 0;
+
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(date);
     switch(calendar.get(Calendar.DAY_OF_WEEK)) {
@@ -25,15 +35,15 @@ private QuoteDetail createQuoteDetail(Room room, Date date){
         case Calendar.TUESDAY:
         case Calendar.WEDNESDAY:
         case Calendar.THURSDAY:
-            detail.setRate(room.getWeekdayRate());
+            rate = room.getWeekdayRate();
             break;
         case Calendar.FRIDAY:
         case Calendar.SATURDAY:
         case Calendar.SUNDAY:
-            detail.setRate(room.getWeekendRate());;
+            rate = room.getWeekendRate();
             break;
     }
-    return detail;
+    return rate;
 }
 
 private void buildQuoteDetails(Quote quote, BookingRequestDataObject requestDataObject){
