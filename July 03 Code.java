@@ -5,7 +5,7 @@ public Quote createQuote(BookingRequestDataObject requestDataObject) {
 
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
     quote.setCustomer(customer);
-    
+
     quote.setDate(new Date());
     buildQuoteDetails(quote, requestDataObject);
     buildSpecialOffer(quote, requestDataObject);   
@@ -15,8 +15,9 @@ public Quote createQuote(BookingRequestDataObject requestDataObject) {
 
 private QuoteDetail createQuoteDetail(Room room, Date date){
     QuoteDetail detail = new QuoteDetail();
-    detail.setRoomId(room.getId());
+    detail.setRoom(room);
     detail.setDate(date);
+    
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(date);
     switch(calendar.get(Calendar.DAY_OF_WEEK)) {
