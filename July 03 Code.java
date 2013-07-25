@@ -1,27 +1,15 @@
 // Could refactor requestDataObject to directly return a date interval
 // Transactional save to deal with potential unsuccessful save. Assuming the happy path currently
 public Quote createQuote(BookingRequestDataObject requestDataObject) {
-    Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
-   
     Quote quote = new Quote();
-    quote.setCustomer(customer);
-    quote.setDate(new Date());
-    
-    
-    buildQuoteDetails(quote, requestDataObject);
-    
 
-    if (requestDataObject.getSelectedSpecialOfferIds().length > 0) {
-        for (Long id : requestDataObject.getSelectedSpecialOfferIds()) {
-            SpecialOffer specialOffer = specialOfferDataAccess.get(id);
-            QuoteSpecialOffer quoteSpecialOffer = new QuoteSpecialOffer();
-            quoteSpecialOffer.setSpecialOfferId(id);
-            quoteSpecialOffer.setRate(specialOffer.getRate());
-            quoteSpecialOfferDataAccess.save(quoteSpecialOffer);
-            quote.AddSpecialOffers(quoteSpecialOffer);
-        }
-    }
+    Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
+    quote.setCustomer(customer);
     
+    quote.setDate(new Date());
+    buildQuoteDetails(quote, requestDataObject);
+    buildSpecialOffer(quote, requestDataObject);   
+
     return quote;
 }
 
@@ -67,4 +55,17 @@ private void buildQuoteDetails(Quote quote, BookingRequestDataObject requestData
             quote.AddQuoteDetails(detail);
         }
     }
+}
+
+private void buildSpecialOffer(Quote quote, BookingRequestDataObject requestDataObject){
+    if (requestDataObject.getSelectedSpecialOfferIds().length > 0) {
+        for (Long id : requestDataObject.getSelectedSpecialOfferIds()) {
+            SpecialOffer specialOffer = specialOfferDataAccess.get(id);
+            QuoteSpecialOffer quoteSpecialOffer = new QuoteSpecialOffer();
+            quoteSpecialOffer.setSpecialOfferId(id);
+            quoteSpecialOffer.setRate(specialOffer.getRate());
+            quoteSpecialOfferDataAccess.save(quoteSpecialOffer);
+            quote.AddSpecialOffers(quoteSpecialOffer);
+        }
+    }   
 }
