@@ -2,12 +2,10 @@
 // Transactional save to deal with potential unsuccessful save. Assuming the happy path currently
 // Assunimg the rate is a double
 public Quote createQuote(BookingRequestDataObject requestDataObject) {
-    Quote quote = new Quote();
-
     Customer customer  = customerDataAccess.get(requestDataObject.getCustomerId());
-    quote.setCustomer(customer);
+    Date purchaseDate = new Date();
 
-    quote.setDate(new Date());
+    Quote quote = new Quote(customer, purchaseDate);
 
     List<Room> rooms = roomDataAccess.find(dateInterval);
     if (rooms == null) {
